@@ -1,40 +1,59 @@
 import javax.swing.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.GregorianCalendar;
 
-public class Main {
-    void addRemindToDB(String dateIn, String timeIn, String messageIn, ){
+public class Main extends JFrame {
+    private static DefaultTableModel tableModel;
+    private Object[] columnsHeader = new String[] {"активно", "время", "следующая дата", "сообщение"};
 
+    Main(){
+        super("напоминания");
+
+        GUI();
     }
 
     public static void main(String[] args){
+        new Main();
+
         GregorianCalendar calendar = new GregorianCalendar();
+    }
 
-        RemindsTableWindow remindsTableWindow = new RemindsTableWindow();
-        remindsTableWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    static void addRemind(boolean activeIn, String timeIn, String nextDateIn, String messageIn){
+        tableModel.addRow(new String[]{"", timeIn, nextDateIn, messageIn});
+    }
 
-        Connection c = null;
-        try {
-            Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:config.db");
+    void GUI(){
+        JButton addButton = new JButton("добавить");
 
-            Statement stmt = c.createStatement();
-            String sql = "CREATE TABLE reminds " +
-                    "(id INT PRIMARY KEY, " +
-                    " date TEXT, " +
-                    " time TEXT, " +
-                    " message TEXT, " +
-                    " days TEXT, " +
-                    " limNum INT)";
-            stmt.executeUpdate(sql);
-            stmt.close();
-            c.close();
-        } catch ( Exception e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
-        }
-        System.out.println("table created");
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RemindWindow remindWindow = new RemindWindow(new ApplyRemindListener() {
+                    public void addChangeRemind(Remind remindIn) {
+                        boolean active = true;
+
+                        if(remindIn.operationType == 2){
+                            active = remindIn.active;
+                        }
+
+                        addRemind(active, remindIn.time, remindIn.date, remindIn.message);
+                    }
+                });
+            }
+        });
+
+        tableModel = new DefaultTableModel();
+        tableModel.setColumnIdentifiers(columnsHeader);
+
+        JTable table = new JTable(tableModel);
+
+        JPanel windowPanel = new JPanel();
+        windowPanel.add(addButton);
+        this.getContentPane().add(windowPanel);
+        windowPanel.setLayout(new BoxLayout(windowPanel, BoxLayout.Y_AXIS));
+        windowPanel.add(table);
+        this.pack();
+        this.setVisible(true);
     }
 }
