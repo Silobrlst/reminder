@@ -37,6 +37,8 @@ public class Main extends JFrame {
                             active = remindIn.active;
                         }
 
+                        System.err.println("qweqweqweqwewqe");
+
                         addRemind(active, remindIn.time, remindIn.date, remindIn.message);
                     }
                 });

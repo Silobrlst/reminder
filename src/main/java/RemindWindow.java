@@ -127,6 +127,17 @@ public class RemindWindow extends JFrame {
         });
         //<дополнительно/>----------------------------
 
+        //<кнопки принять/отмена>---------------------
+        JPanel acceptPanel = new JPanel();
+        acceptPanel.setLayout(new BoxLayout(acceptPanel, BoxLayout.X_AXIS));
+
+        JButton accept = new JButton("принять");
+        JButton cancel = new JButton("отмена");
+
+        acceptPanel.add(accept);
+        acceptPanel.add(cancel);
+        //</кнопки принять/отмена>---------------------
+
         JPanel windowPanel = new JPanel();
         this.getContentPane().add(windowPanel);
         windowPanel.setLayout(new BoxLayout(windowPanel, BoxLayout.Y_AXIS));
@@ -134,6 +145,7 @@ public class RemindWindow extends JFrame {
         windowPanel.add(daysPanel);
         windowPanel.add(messageText);
         windowPanel.add(additionallyPanel);
+        windowPanel.add(acceptPanel);
         this.pack();
         this.setVisible(true);
     }
@@ -275,6 +287,17 @@ public class RemindWindow extends JFrame {
         });
         //<дополнительно/>----------------------------
 
+        //<кнопки принять/отмена>---------------------
+        JPanel acceptPanel = new JPanel();
+        acceptPanel.setLayout(new BoxLayout(acceptPanel, BoxLayout.X_AXIS));
+
+        JButton accept = new JButton("принять");
+        JButton cancel = new JButton("отмена");
+
+        acceptPanel.add(accept);
+        acceptPanel.add(cancel);
+        //</кнопки принять/отмена>---------------------
+
         JPanel windowPanel = new JPanel();
         this.getContentPane().add(windowPanel);
         windowPanel.setLayout(new BoxLayout(windowPanel, BoxLayout.Y_AXIS));
@@ -282,6 +305,7 @@ public class RemindWindow extends JFrame {
         windowPanel.add(daysPanel);
         windowPanel.add(messageText);
         windowPanel.add(additionallyPanel);
+        windowPanel.add(acceptPanel);
         this.pack();
         this.setVisible(true);
     }
