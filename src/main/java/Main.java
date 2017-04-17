@@ -1,7 +1,9 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.GregorianCalendar;
 
 public class Main extends JFrame {
@@ -57,5 +59,33 @@ public class Main extends JFrame {
         windowPanel.add(table);
         this.pack();
         this.setVisible(true);
+
+        setTrayIcon();
+    }
+
+    private static void setTrayIcon() {
+        PopupMenu trayMenu = new PopupMenu();
+        MenuItem item = new MenuItem("Exit");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+        trayMenu.add(item);
+
+        Image icon = Toolkit.getDefaultToolkit().getImage("Lassie-icon.png");
+        TrayIcon trayIcon = new TrayIcon(icon, "напоминалка", trayMenu);
+        trayIcon.setImageAutoSize(true);
+
+        SystemTray tray = SystemTray.getSystemTray();
+        try {
+            tray.add(trayIcon);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+
+        trayIcon.displayMessage("напоминалка", "Application started!",
+                TrayIcon.MessageType.INFO);
     }
 }

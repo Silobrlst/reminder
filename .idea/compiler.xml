@@ -25,8 +25,8 @@
         <module name="reminder" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="reminder" target="1.5" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="reminder" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

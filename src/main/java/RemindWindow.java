@@ -3,9 +3,10 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class RemindWindow extends JFrame {
     //создать новое напоминание
@@ -25,14 +26,19 @@ public class RemindWindow extends JFrame {
 
         ButtonGroup group = new ButtonGroup();
         JRadioButton week = new JRadioButton("за неделю", true);
+        week.setMnemonic(Period.Week.ordinal());
         group.add(week);
         JRadioButton month = new JRadioButton("за месяц", false);
+        month.setMnemonic(Period.Month.ordinal());
         group.add(month);
         JRadioButton year = new JRadioButton("за год", false);
+        year.setMnemonic(Period.Year.ordinal());
         group.add(year);
         final JRadioButton nDays = new JRadioButton("за N дней", false);
+        nDays.setMnemonic(Period.Ndays.ordinal());
         group.add(nDays);
         final JRadioButton oneTime = new JRadioButton("разово", false);
+        oneTime.setMnemonic(Period.OneTime.ordinal());
         group.add(oneTime);
 
         periodPanel.add(week);
@@ -96,6 +102,14 @@ public class RemindWindow extends JFrame {
         timeSpinner.setEditor(timeEditor);
         timeSpinner.setValue(new Date());
         daysPanel.add(timeSpinner);
+        //System.err.println(timeSpinner.getValue());
+
+        try{
+            DateFormat format = new SimpleDateFormat("EEE MMM yy HH:mm:ss", Locale.ENGLISH);
+            Date date = format.parse(timeSpinner.getValue().toString());
+            System.out.println(date); // Sat Jan 02 00:00:00 GMT 2010
+        }catch(ParseException e){
+        }
         //<дни и время появления/>----------------------------
 
         JTextArea messageText = new JTextArea(3, 0);
@@ -133,6 +147,30 @@ public class RemindWindow extends JFrame {
 
         JButton accept = new JButton("принять");
         JButton cancel = new JButton("отмена");
+
+        accept.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Period period = Period.values()[group.getSelection().getMnemonic()];
+                String message = messageText.getText();
+
+                ArrayList<Integer> days = new ArrayList<>();
+                String[] parts = daysText.getText().split("\\s*,\\s*");
+                for(int i=0; i<parts.length; i++){
+                    String regexp = "\\s*-\\s*";
+                    if(parts[i].matches(regexp)){
+                        String[] parts2 = parts[i].split(regexp);
+                        for(int j=Integer.parseInt(parts2[0]); j<Integer.parseInt(parts2[1]); j++){
+                            days.add(j);
+                        }
+                    }else{
+                        days.add(Integer.parseInt(parts[i]));
+                    }
+                }
+
+                //applyRemindListenerIn.addChangeRemind(new Remind(true, period, days, message));
+            }
+        });
 
         acceptPanel.add(accept);
         acceptPanel.add(cancel);
