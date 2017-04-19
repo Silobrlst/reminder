@@ -1,3 +1,6 @@
+import boofcv.gui.ListDisplayPanel;
+import com.sun.javaws.jnl.JavaFXRuntimeDesc;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -6,6 +9,9 @@ import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.zone.ZoneRules;
 import java.util.*;
 
 public class RemindWindow extends JFrame {
@@ -17,6 +23,9 @@ public class RemindWindow extends JFrame {
         final JTextField daysText = new JTextField();
         final JSpinner timeSpinner = new JSpinner( new SpinnerDateModel() );
         final JCheckBox limitCheck = new JCheckBox("ограниченное количество появлений", false);
+        JPanel timePanel = new JPanel();
+        JTextField hTime2 = new JTextField(2);
+        JTextField mTime2 = new JTextField(2);
 
         //<Период>----------------------------
         JPanel periodPanel = new JPanel();
@@ -52,12 +61,29 @@ public class RemindWindow extends JFrame {
 
         periodPanel.add(oneTime);
 
-        SpinnerDateModel dateModel = new SpinnerDateModel();
-        final JSpinner oneTimeSpinner = new JSpinner(dateModel);
-        oneTimeSpinner.setValue(new Date());
-        oneTimeSpinner.setEnabled(false);
+        ZonedDateTime zdt = ZonedDateTime.now(ZoneId.of("UTC+5"));
+        JPanel dateTimePanel = new JPanel();
+        JTextField dayDate = new JTextField(new Integer(zdt.getDayOfMonth()).toString(), 2);
+        dayDate.setEnabled(false);
+        JTextField monthDate = new JTextField(new Integer(zdt.getMonth().getValue()).toString(), 2);
+        monthDate.setEnabled(false);
+        JTextField yearDate = new JTextField(new Integer(zdt.getYear()).toString(), 4);
+        yearDate.setEnabled(false);
+        JTextField hTime = new JTextField(new Integer(zdt.getHour()).toString(), 2);
+        hTime.setEnabled(false);
+        JTextField mTime = new JTextField(new Integer(zdt.getMinute()).toString(), 2);
+        mTime.setEnabled(false);
+        dateTimePanel.add(dayDate);
+        dateTimePanel.add(new JLabel("."));
+        dateTimePanel.add(monthDate);
+        dateTimePanel.add(new JLabel("."));
+        dateTimePanel.add(yearDate);
+        dateTimePanel.add(new JLabel("  "));
+        dateTimePanel.add(hTime);
+        dateTimePanel.add(new JLabel(":"));
+        dateTimePanel.add(mTime);
 
-        periodPanel.add(oneTimeSpinner);
+        periodPanel.add(dateTimePanel);
 
         ActionListener radioGroupListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -68,14 +94,30 @@ public class RemindWindow extends JFrame {
                 }
 
                 if(oneTime.isSelected()){
-                    oneTimeSpinner.setEnabled(true);
+                    dateTimePanel.setEnabled(true);
+                    dayDate.setEnabled(true);
+                    monthDate.setEnabled(true);
+                    yearDate.setEnabled(true);
+                    hTime.setEnabled(true);
+                    mTime.setEnabled(true);
                     daysPanel.setEnabled(false);
+                    timePanel.setEnabled(false);
+                    hTime2.setEnabled(false);
+                    mTime2.setEnabled(false);
                     daysText.setEnabled(false);
                     timeSpinner.setEnabled(false);
                     limitCheck.setEnabled(false);
                 }else{
-                    oneTimeSpinner.setEnabled(false);
+                    dateTimePanel.setEnabled(false);
+                    dayDate.setEnabled(false);
+                    monthDate.setEnabled(false);
+                    yearDate.setEnabled(false);
+                    hTime.setEnabled(false);
+                    mTime.setEnabled(false);
                     daysPanel.setEnabled(true);
+                    timePanel.setEnabled(true);
+                    hTime2.setEnabled(true);
+                    mTime2.setEnabled(true);
                     daysText.setEnabled(true);
                     timeSpinner.setEnabled(true);
                     limitCheck.setEnabled(true);
@@ -98,18 +140,12 @@ public class RemindWindow extends JFrame {
         GhostText ghostText = new GhostText(daysText, "1, 2, 3-7, ...");
         daysPanel.add(daysText);
 
-        JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm");
-        timeSpinner.setEditor(timeEditor);
-        timeSpinner.setValue(new Date());
-        daysPanel.add(timeSpinner);
-        //System.err.println(timeSpinner.getValue());
-
-        try{
-            DateFormat format = new SimpleDateFormat("EEE MMM yy HH:mm:ss", Locale.ENGLISH);
-            Date date = format.parse(timeSpinner.getValue().toString());
-            System.out.println(date); // Sat Jan 02 00:00:00 GMT 2010
-        }catch(ParseException e){
-        }
+        hTime2.setText(new Integer(zdt.getHour()).toString());
+        mTime2.setText(new Integer(zdt.getMinute()).toString());
+        timePanel.add(hTime2);
+        timePanel.add(new JLabel(":"));
+        timePanel.add(mTime2);
+        daysPanel.add(timePanel);
         //<дни и время появления/>----------------------------
 
         JTextArea messageText = new JTextArea(3, 0);
@@ -148,27 +184,53 @@ public class RemindWindow extends JFrame {
         JButton accept = new JButton("принять");
         JButton cancel = new JButton("отмена");
 
+
+        JFrame thisContext = this;
+        cancel.addActionListener(e -> thisContext.dispose());
         accept.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Period period = Period.values()[group.getSelection().getMnemonic()];
                 String message = messageText.getText();
 
+                int ndays = 0;
+                if(nDaysText.getText().matches("\\d\\d*")){
+                    ndays = Integer.parseInt(nDaysText.getText());
+                }
+
+                int limNum = 0;
+                if(nDaysText.getText().matches("\\d\\d*")){
+                    ndays = Integer.parseInt(limitText.getText());
+                }
+
+                int curNum = 0;
+
+                String timeStr;
+                String dateStr = "";
+                if(oneTime.isSelected()){
+                    dateStr = dayDate.getText()+"."+monthDate.getText()+"."+yearDate.getText();
+                    timeStr = hTime.getText()+":"+mTime.getText();
+                }else{
+                    timeStr = hTime2.getText()+":"+mTime2.getText();
+                }
+
                 ArrayList<Integer> days = new ArrayList<>();
                 String[] parts = daysText.getText().split("\\s*,\\s*");
                 for(int i=0; i<parts.length; i++){
-                    String regexp = "\\s*-\\s*";
-                    if(parts[i].matches(regexp)){
-                        String[] parts2 = parts[i].split(regexp);
-                        for(int j=Integer.parseInt(parts2[0]); j<Integer.parseInt(parts2[1]); j++){
+                    if(parts[i].matches("\\d*\\s*-\\s*\\d*")){
+                        String[] parts2 = parts[i].split("\\s*-\\s*");
+                        for(int j=Integer.parseInt(parts2[0]); j<Integer.parseInt(parts2[1])+1; j++){
                             days.add(j);
                         }
-                    }else{
+                    }else if(parts[i].matches("\\d*")){
                         days.add(Integer.parseInt(parts[i]));
                     }
                 }
 
-                //applyRemindListenerIn.addChangeRemind(new Remind(true, period, days, message));
+                if(days.size() > 0 && !ghostText.isEmpty || oneTime.isSelected()){
+                    applyRemindListenerIn.addChangeRemind(new Remind(UUID.randomUUID().toString(), true, period, days, message, timeStr, dateStr, ndays, limNum, curNum));
+                    thisContext.dispose();
+                }
             }
         });
 

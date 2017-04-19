@@ -1,7 +1,8 @@
 import java.util.ArrayList;
 
 public class Remind {
-    boolean active;
+    String id;
+    Boolean active;
     Period period; //период
     ArrayList<Integer> days; //дни появления
     String message;
@@ -14,7 +15,8 @@ public class Remind {
     //доп. атрибуты
     int operationType; //1 - создание, 2 - изменение
 
-    Remind(boolean activeIn,
+    Remind(String idIn,
+           Boolean activeIn,
            Period periodIn,
            ArrayList<Integer> daysIn,
            String messageIn,
@@ -23,6 +25,7 @@ public class Remind {
            int nDaysIn,
            int limNumIn,
            int curNumIn){
+        id = idIn;
         active = activeIn;
         period = periodIn;
         days = daysIn;
