@@ -240,6 +240,8 @@ public class Main extends JFrame {
                         public void addChangeRemind(Remind remindIn) {
                             addRemindGUI(remindIn);
                             reminds.add(remindIn);
+
+                            //здесь остановился
                             saveDataBase(globalConfig);
                         }
                     }, remind);

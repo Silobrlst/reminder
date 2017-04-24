@@ -97,4 +97,6 @@ public class GhostText implements FocusListener, DocumentListener, PropertyChang
         updateState();
     }
 
+    public void resetColor(){
+    }
 }

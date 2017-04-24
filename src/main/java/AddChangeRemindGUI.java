@@ -38,6 +38,7 @@ public class AddChangeRemindGUI extends JFrame {
     private JPanel timePanel;
     private JTextField hTime2;
     private JTextField mTime2;
+    private GhostText ghostText;
     //</дни и время появления>----------------------------
 
     private JTextArea messageText;
@@ -48,15 +49,15 @@ public class AddChangeRemindGUI extends JFrame {
     private JTextField limitText;
     //<дополнительно/>----------------------------
 
-    private String addZero(String strIn, int numIn){
+    private String addZero(String strIn, int numIn) {
         String str = "";
-        for(int i=strIn.length(); i<numIn; i++){
-            str+="0";
+        for (int i = strIn.length(); i < numIn; i++) {
+            str += "0";
         }
-        return str+strIn;
+        return str + strIn;
     }
 
-    private void init(ApplyRemindListener applyRemindListenerIn){
+    private void init(ApplyRemindListener applyRemindListenerIn) {
         daysPanel = new JPanel();
         daysText = new JTextField();
         limitCheck = new JCheckBox("ограниченное количество появлений", false);
@@ -116,13 +117,13 @@ public class AddChangeRemindGUI extends JFrame {
 
         ActionListener radioGroupListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(nDays.isSelected()){
+                if (nDays.isSelected()) {
                     nDaysText.setEnabled(true);
-                }else{
+                } else {
                     nDaysText.setEnabled(false);
                 }
 
-                if(oneTime.isSelected()){
+                if (oneTime.isSelected()) {
                     dateTimePanel.setEnabled(true);
                     dayDate.setEnabled(true);
                     monthDate.setEnabled(true);
@@ -135,7 +136,7 @@ public class AddChangeRemindGUI extends JFrame {
                     mTime2.setEnabled(false);
                     daysText.setEnabled(false);
                     limitCheck.setEnabled(false);
-                }else{
+                } else {
                     dateTimePanel.setEnabled(false);
                     dayDate.setEnabled(false);
                     monthDate.setEnabled(false);
@@ -157,19 +158,28 @@ public class AddChangeRemindGUI extends JFrame {
         year.addActionListener(radioGroupListener);
         nDays.addActionListener(radioGroupListener);
         oneTime.addActionListener(radioGroupListener);
+
+        ZonedDateTime zdt = ZonedDateTime.now(ZoneId.of("UTC+5"));
+        dayDate.setText(Integer.toString(zdt.getMonth().getValue()));
+        monthDate.setText(Integer.toString(zdt.getDayOfMonth()));
+        yearDate.setText(Integer.toString(zdt.getYear()));
+        hTime.setText(Integer.toString(zdt.getHour()));
+        mTime.setText(Integer.toString(zdt.getMinute()));
         //<Период/>----------------------------
 
         //<дни и время появления>----------------------------
         daysPanel.setLayout(new BoxLayout(daysPanel, BoxLayout.X_AXIS));
         daysPanel.setBorder(BorderFactory.createTitledBorder("дни и время появления"));
 
-        GhostText ghostText = new GhostText(daysText, "1, 2, 3-7, ...");
         daysPanel.add(daysText);
 
         timePanel.add(hTime2);
         timePanel.add(new JLabel(":"));
         timePanel.add(mTime2);
         daysPanel.add(timePanel);
+
+        hTime2.setText(Integer.toString(zdt.getHour()));
+        mTime2.setText(Integer.toString(zdt.getMinute()));
         //</дни и время появления>----------------------------
 
         messageText = new JTextArea(3, 0);
@@ -190,9 +200,9 @@ public class AddChangeRemindGUI extends JFrame {
 
         limitCheck.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(limitCheck.isSelected()){
+                if (limitCheck.isSelected()) {
                     limitText.setEnabled(true);
-                }else{
+                } else {
                     limitText.setEnabled(false);
                 }
             }
@@ -215,12 +225,12 @@ public class AddChangeRemindGUI extends JFrame {
                 String message = messageText.getText();
 
                 int ndays = 0;
-                if(nDaysText.getText().matches("\\d\\d*")){
+                if (nDaysText.getText().matches("\\d\\d*")) {
                     ndays = Integer.parseInt(nDaysText.getText());
                 }
 
                 int limNum = 0;
-                if(nDaysText.getText().matches("\\d\\d*")){
+                if (nDaysText.getText().matches("\\d\\d*")) {
                     ndays = Integer.parseInt(limitText.getText());
                 }
 
@@ -228,36 +238,36 @@ public class AddChangeRemindGUI extends JFrame {
 
                 String timeStr;
                 String dateStr = "";
-                if(oneTime.isSelected()){
-                    dateStr = dayDate.getText()+"."+addZero(monthDate.getText(), 2)+"."+addZero(yearDate.getText(), 4);
-                    timeStr = hTime.getText()+":"+addZero(mTime.getText(), 2);
-                }else{
-                    timeStr = hTime2.getText()+":"+addZero(mTime2.getText(), 2);
+                if (oneTime.isSelected()) {
+                    dateStr = dayDate.getText() + "." + addZero(monthDate.getText(), 2) + "." + addZero(yearDate.getText(), 4);
+                    timeStr = hTime.getText() + ":" + addZero(mTime.getText(), 2);
+                } else {
+                    timeStr = hTime2.getText() + ":" + addZero(mTime2.getText(), 2);
                 }
 
                 ArrayList<Integer> days = new ArrayList<>();
-                if(daysText.getText().matches("^\\s*\\d*\\s*$")){
+                if (daysText.getText().matches("^\\s*\\d*\\s*$")) {
                     days.add(Integer.parseInt(daysText.getText()));
-                }else if(daysText.getText().matches("(,?\\s*(\\d|\\d\\s*-\\s*\\d)\\s*,?)*")){
+                } else if (daysText.getText().matches("(,?\\s*(\\d|\\d\\s*-\\s*\\d)\\s*,?)*")) {
                     String[] parts = daysText.getText().split("\\s*,\\s*");
-                    for(int i=0; i<parts.length; i++){
-                        if(parts[i].matches("\\d*\\s*-\\s*\\d*")){
+                    for (int i = 0; i < parts.length; i++) {
+                        if (parts[i].matches("\\d*\\s*-\\s*\\d*")) {
                             String[] parts2 = parts[i].split("\\s*-\\s*");
-                            for(int j=Integer.parseInt(parts2[0]); j<Integer.parseInt(parts2[1])+1; j++){
+                            for (int j = Integer.parseInt(parts2[0]); j < Integer.parseInt(parts2[1]) + 1; j++) {
                                 days.add(j);
                             }
-                        }else if(parts[i].matches("\\d*")){
+                        } else if (parts[i].matches("\\d*")) {
                             days.add(Integer.parseInt(parts[i]));
                         }
                     }
-                }else if(daysText.getText().matches("\\d*\\s*-\\s*\\d*")){
+                } else if (daysText.getText().matches("\\d*\\s*-\\s*\\d*")) {
                     String[] parts2 = daysText.getText().split("\\s*-\\s*");
-                    for(int j=Integer.parseInt(parts2[0]); j<Integer.parseInt(parts2[1])+1; j++){
+                    for (int j = Integer.parseInt(parts2[0]); j < Integer.parseInt(parts2[1]) + 1; j++) {
                         days.add(j);
                     }
                 }
 
-                if(days.size() > 0 && !ghostText.isEmpty || oneTime.isSelected()){
+                if (days.size() > 0 && !ghostText.isEmpty || oneTime.isSelected()) {
                     applyRemindListenerIn.addChangeRemind(new Remind(UUID.randomUUID().toString(), true, period, days, message, timeStr, dateStr, ndays, limNum, curNum));
                     thisContext.dispose();
                 }
@@ -281,18 +291,11 @@ public class AddChangeRemindGUI extends JFrame {
     }
 
     //создать новое напоминание
-    AddChangeRemindGUI(ApplyRemindListener applyRemindListenerIn){
+    AddChangeRemindGUI(ApplyRemindListener applyRemindListenerIn) {
         super("добавить напоминание");
         init(applyRemindListenerIn);
 
         //<Период>----------------------------
-        ZonedDateTime zdt = ZonedDateTime.now(ZoneId.of("UTC+5"));
-        dayDate.setText(Integer.toString(zdt.getMonth().getValue()));
-        monthDate.setText(Integer.toString(zdt.getDayOfMonth()));
-        yearDate.setText(Integer.toString(zdt.getYear()));
-        hTime.setText(Integer.toString(zdt.getHour()));
-        mTime.setText(Integer.toString(zdt.getMinute()));
-
         dayDate.setEnabled(false);
         monthDate.setEnabled(false);
         yearDate.setEnabled(false);
@@ -301,19 +304,18 @@ public class AddChangeRemindGUI extends JFrame {
         //<Период/>----------------------------
 
         //<дни и время появления>----------------------------
-        hTime2.setText(Integer.toString(zdt.getHour()));
-        mTime2.setText(Integer.toString(zdt.getMinute()));
-        //</дни и время появления>----------------------------
+        ghostText = new GhostText(daysText, "1, 2, 3-7, ...");
+        //</дни и время появления>---------------------------
     }
 
     //изменить напоминание
-    AddChangeRemindGUI(ApplyRemindListener applyRemindListenerIn, Remind remindIn){
+    AddChangeRemindGUI(ApplyRemindListener applyRemindListenerIn, Remind remindIn) {
         super("изменить напоминание");
 
         init(applyRemindListenerIn);
 
         //<Период>----------------------------
-        switch(remindIn.period){
+        switch (remindIn.period) {
             case Week:
                 group.setSelected(week.getModel(), true);
                 break;
@@ -351,6 +353,27 @@ public class AddChangeRemindGUI extends JFrame {
                 limitCheck.setEnabled(false);
                 break;
         }
+
+        if(remindIn.period == Period.Week || remindIn.period == Period.Month || remindIn.period == Period.Year){
+            dateTimePanel.setEnabled(false);
+            dayDate.setEnabled(false);
+            monthDate.setEnabled(false);
+            yearDate.setEnabled(false);
+            hTime.setEnabled(false);
+            mTime.setEnabled(false);
+            daysPanel.setEnabled(true);
+            timePanel.setEnabled(true);
+            hTime2.setEnabled(true);
+            mTime2.setEnabled(true);
+            daysText.setEnabled(true);
+            limitCheck.setEnabled(true);
+        }
+
+        if (nDays.isSelected()) {
+            nDaysText.setEnabled(true);
+        } else {
+            nDaysText.setEnabled(false);
+        }
         //<Период/>----------------------------
 
         //<дни и время появления>----------------------------
@@ -358,40 +381,62 @@ public class AddChangeRemindGUI extends JFrame {
         int first = remindIn.days.get(0);
         int last = first;
         boolean addComma = false;
-        for(Integer day: remindIn.days){
-            if(day == last+1){
+        for (Integer day : remindIn.days) {
+            if (day == last + 1 || day == last) {
                 last = day;
-            }else if(first == last){
-                if(addComma){
+            } else {
+                if (first == last) {
+                    if (addComma) {
+                        days = days + ", ";
+                    }
+                    days = days + String.valueOf(first);
+                    addComma = true;
+                } else if (last == first + 1) {
+                    if (addComma) {
+                        days = days + ", ";
+                    }
+                    days = days + String.valueOf(first);
                     days = days + ", ";
+                    days = days + String.valueOf(last);
+                    addComma = true;
+                } else {
+                    if (addComma) {
+                        days = days + ", ";
+                    }
+                    days = days + String.valueOf(first);
+                    days = days + "-";
+                    days = days + String.valueOf(last);
+                    addComma = true;
                 }
-                days = days + String.valueOf(first);
-                addComma = true;
-            }else if(last == first+1){
-                if(addComma){
-                    days = days + ", ";
-                }
+            }
+        }
+
+        if (days.length() == 0) {
+            if (last > first + 1) {
+                days += first + "-" + last;
+            } else if (last == first) {
+                days += first;
+            } else if (last == first+1) {
                 days = days + String.valueOf(first);
                 days = days + ", ";
                 days = days + String.valueOf(last);
-                addComma = true;
-            }else{
-                if(addComma){
-                    days = days + ", ";
-                }
-                days = days + String.valueOf(first);
-                days = days + "-";
-                days = days + String.valueOf(last);
-                addComma = true;
             }
         }
 
         daysText.setText(days);
+        ghostText = new GhostText(daysText, "1, 2, 3-7, ...");
+
+        String timeParts[] = remindIn.time.split(":");
+        hTime2.setText(timeParts[0]);
+        mTime2.setText(timeParts[1]);
         //</дни и время появления>----------------------------
 
         messageText.setText(remindIn.message);
 
         //<дополнительно>----------------------------
-        //<дополнительно/>----------------------------
+        if(remindIn.limNum != 0){
+            limitText.setText(Integer.toString(remindIn.limNum));
+        }
+        //<дополнительно/>---------------------------
     }
 }

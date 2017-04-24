@@ -1,20 +1,42 @@
-{"reminds": [{
-     "date": "",
-     "period": 0,
-     "limNum": 0,
-     "curNum": 0,
-     "active": true,
-     "days": [
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7
-     ],
-     "id": "b7f2f7d3-f65c-4294-8047-fedefbf46fb9",
-     "time": "15:58",
-     "nDays": 0,
-     "message": ""
-}]}
+{"reminds": [
+     {
+          "date": "",
+          "period": 0,
+          "limNum": 0,
+          "curNum": 0,
+          "active": true,
+          "days": [
+               1,
+               2,
+               3,
+               4,
+               5,
+               6,
+               7
+          ],
+          "id": "b7f2f7d3-f65c-4294-8047-fedefbf46fb9",
+          "time": "15:58",
+          "nDays": 0,
+          "message": ""
+     },
+     {
+          "date": "",
+          "period": 0,
+          "limNum": 0,
+          "curNum": 0,
+          "active": true,
+          "days": [
+               1,
+               2,
+               3,
+               4,
+               5,
+               6,
+               7
+          ],
+          "id": "655ce185-3481-494d-8349-5001bd97a8c6",
+          "time": "15:58",
+          "nDays": 0,
+          "message": "eqwqw123"
+     }
+]}
